@@ -1,25 +1,26 @@
 #include <iostream>
 using namespace std;
+template<class T>
+class Node
+{
+public:
+	Node* pNext;
+	T data;
 
+	Node(T data = T(), Node* pNext = nullptr)
+	{
+		this->data = data;
+		this->pNext = pNext;
+	}
+};
 template<class T>
 class List
 {
 private:
-	template<class T>
-	class Node
-	{
-	public:
-		Node* pNext;
-		T data;
 
-		Node(T data = T(), Node* pNext = nullptr)
-		{
-			this->data = data;
-			this->pNext = pNext;
-		}
-	};
 	int Size;
 	Node<T>* head;
+	Node<T>* tail;
 
 	Node<T>* find_prev(int index)
 	{
@@ -38,7 +39,7 @@ public:
 	{
 		Size = 0;
 		head = nullptr;
-		for (int i = 0; i < Size; i++)
+		for (int i = 0; i < _l.Size; i++)
 			push_back(_l[i]);
 	}
 	~List()
