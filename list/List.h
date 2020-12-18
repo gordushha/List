@@ -25,10 +25,12 @@ public:
 	ListIterator(ListIterator<T>& _v) : i(_v.i) {}
 	~ListIterator() {}
 
-	bool CanMove() { return (i->pNext != nullptr); }
+	bool CanMove() { return (i != nullptr); }
 	void Move() { i = i->pNext; }
 
 	bool operator==(const ListIterator<T>& _v) { return i == _v.i; }
+	bool operator!=(const ListIterator<T>& _v) { return !((*this) == _v); }
+
 	ListIterator<T> operator++(int)
 	{
 		if (!CanMove())
@@ -38,7 +40,11 @@ public:
 	}
 	ListIterator<T>& operator=(const ListIterator<T>& _v) { i = _v.i; return (*this); }
 
-	T GetData() { return i->data; }
+	T& operator* () {
+		if (i != nullptr)
+			return i->data;
+		else throw - 1;
+	}
 };
 template<class T>
 class List
@@ -68,7 +74,7 @@ public:
 		head = nullptr;
 		for (int i = 0; i < _l.Size; i++)
 		{
-			push_back(k.GetData());
+			push_back(*k);
 			if (k.CanMove())
 				k++;
 		}
@@ -83,11 +89,8 @@ public:
 	ListIterator<T> begin() { return ListIterator<T>(head); }
 	ListIterator<T> end()
 	{
-		Node<T>* current = this->head;
-		while (current->pNext != nullptr)
-			current = current->pNext;
 
-		return ListIterator<T>(current);
+		return ListIterator<T>(nullptr);
 	}
 
 	void push_back(T data)
@@ -179,10 +182,10 @@ public:
 		ostr << "{";
 		for (int i = 0; i < _l.GetSize() - 1; i++)
 		{
-			ostr << k.GetData() << ", ";
+			ostr << *k << ", ";
 			k++;
 		}
-		ostr << k.GetData() << "}";
+		ostr << *k << "}";
 
 		return ostr;
 	}

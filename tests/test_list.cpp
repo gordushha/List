@@ -16,7 +16,7 @@ TEST(list, can_pop_front)
 
 	A.pop_front();
 	ListIterator<int> i = A.begin();
-	EXPECT_EQ(1, i.GetData());
+	EXPECT_EQ(1, *i);
 }
 
 TEST(list, can_pop_back)
@@ -28,7 +28,7 @@ TEST(list, can_pop_back)
 	A.push_back(x3);
 	A.pop_back();
 	ListIterator<int> i = A.end();
-	EXPECT_EQ(1, i.GetData());
+	EXPECT_EQ(1, *i);
 }
 
 TEST(list, can_copy)
@@ -39,7 +39,7 @@ TEST(list, can_copy)
 	List<int> b(a);
 
 	ListIterator<int> i = a.begin();
-	EXPECT_EQ(5, i.GetData());
+	EXPECT_EQ(5, *i);
 }
 
 TEST(list, can_push_back)
@@ -48,7 +48,7 @@ TEST(list, can_push_back)
 	a.push_back(1);
 
 	ListIterator<int> i = a.begin();
-	EXPECT_EQ(1, i.GetData());
+	EXPECT_EQ(1,*i);
 }
 
 
@@ -60,7 +60,7 @@ TEST(list, can_push_front)
 	a.push_front(1);
 
 	ListIterator<int> i = a.begin();
-	EXPECT_EQ(1, i.GetData());
+	EXPECT_EQ(1, *i);
 }
 
 
@@ -74,7 +74,7 @@ TEST(list, can_insert)
 
 	ListIterator<int> i = a.begin();
 	i++;
-	EXPECT_EQ(2, i.GetData());
+	EXPECT_EQ(2,*i);
 }
 
 TEST(list, can_remove)
@@ -87,7 +87,7 @@ TEST(list, can_remove)
 
 	ListIterator<int> i = a.begin();
 	i++;
-	EXPECT_EQ(3, i.GetData());
+	EXPECT_EQ(3, *i);
 }
 
 TEST(list, cant_insert)

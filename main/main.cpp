@@ -30,8 +30,6 @@ int main()
 
 	List<int> lst2(lst);
 
-	ListIterator<int> i = lst2.begin();
-	cout << i.GetData() << " ";
-	i = lst2.end();
-	cout << i.GetData() << endl;
+	for (auto i = lst2.begin(); i != lst2.end(); i++)
+		cout << *(i);
 }
