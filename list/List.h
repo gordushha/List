@@ -12,6 +12,33 @@ public:
 		this->data = data;
 		this->pNext = pNext;
 	}
+	template<class T>
+	friend class ListIterator;
+};
+template<class T>
+class ListIterator
+{
+protected:
+	Node<T>* i;
+public:
+	ListIterator(Node<T>* _n) : i(_n) {}
+	ListIterator(ListIterator<T>& _v) : i(_v.i) {}
+	~ListIterator() {}
+
+	bool CanMove() { return (i->pNext != nullptr); }
+	void Move() { i = i->pNext; }
+
+	bool operator==(const ListIterator<T>& _v) { return i == _v.i; }
+	ListIterator<T> operator++(int)
+	{
+		if (!CanMove())
+			throw logic_error("reached end");
+		Move();
+		return (*this);
+	}
+	ListIterator<T>& operator=(const ListIterator<T>& _v) { i = _v.i; return (*this); }
+
+	T GetData() { return i->data; }
 };
 template<class T>
 class List
@@ -20,7 +47,6 @@ private:
 
 	int Size;
 	Node<T>* head;
-	Node<T>* tail;
 
 	Node<T>* find_prev(int index)
 	{
@@ -37,10 +63,15 @@ public:
 	}
 	List(List<T>& _l)
 	{
+		ListIterator<T> k = _l.begin();
 		Size = 0;
 		head = nullptr;
 		for (int i = 0; i < _l.Size; i++)
-			push_back(_l[i]);
+		{
+			push_back(k.GetData());
+			if (k.CanMove())
+				k++;
+		}
 	}
 	~List()
 	{
@@ -49,20 +80,14 @@ public:
 
 	int GetSize() const { return Size; }
 
-	T& operator[](const int index)
+	ListIterator<T> begin() { return ListIterator<T>(head); }
+	ListIterator<T> end()
 	{
-		if (index < 0 || index >= Size)
-			throw length_error("incorrect index");
-
-		int counter = 0;
 		Node<T>* current = this->head;
-		while (current != nullptr)
-		{
-			if (counter == index)
-				return current->data;
+		while (current->pNext != nullptr)
 			current = current->pNext;
-			counter++;
-		}
+
+		return ListIterator<T>(current);
 	}
 
 	void push_back(T data)
@@ -150,10 +175,14 @@ public:
 
 	friend ostream& operator << (ostream& ostr, List<T>& _l)
 	{
+		ListIterator<T> k = _l.begin();
 		ostr << "{";
-			for (int i = 0; i < _l.GetSize() - 1; i++)
-				ostr << _l[i] << ", ";
-		ostr << _l[_l.GetSize() - 1] << "}";
+		for (int i = 0; i < _l.GetSize() - 1; i++)
+		{
+			ostr << k.GetData() << ", ";
+			k++;
+		}
+		ostr << k.GetData() << "}";
 
 		return ostr;
 	}

@@ -2,14 +2,14 @@
 
 int main()
 {
-	SList<int> lst;
+	List<int> lst;
 	lst.push_back(1);
 	lst.push_back(5);
 	lst.push_back(100);
 
 	cout << "Size: " << lst.GetSize() << endl;
 	cout << lst << endl;
-	
+
 	cout << endl << "Deleting first" << endl;
 	lst.pop_front();
 	cout << lst << endl;
@@ -28,5 +28,10 @@ int main()
 	lst.pop_back();
 	cout << lst << endl;
 
-	SList<int> lst2(lst);
+	List<int> lst2(lst);
+
+	ListIterator<int> i = lst2.begin();
+	cout << i.GetData() << " ";
+	i = lst2.end();
+	cout << i.GetData() << endl;
 }
