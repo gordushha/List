@@ -5,12 +5,14 @@ class Node
 {
 public:
 	Node* pNext;
+	Node* pPrev;
 	T data;
 
-	Node(T data = T(), Node* pNext = nullptr)
+	Node(T data = T(), Node* pNext = nullptr, Node* pPrev = nullptr)
 	{
 		this->data = data;
 		this->pNext = pNext;
+		this->pPrev = pPrev;
 	}
 	template<class T>
 	friend class ListIterator;
@@ -53,6 +55,7 @@ private:
 
 	int Size;
 	Node<T>* head;
+	Node<T>* tail;
 
 	Node<T>* find_prev(int index)
 	{
@@ -66,12 +69,14 @@ public:
 	{
 		Size = 0;
 		head = nullptr;
+		tail = nullptr;
 	}
 	List(List<T>& _l)
 	{
 		ListIterator<T> k = _l.begin();
 		Size = 0;
 		head = nullptr;
+		tail = nullptr;
 		for (int i = 0; i < _l.Size; i++)
 		{
 			push_back(*k);
@@ -87,23 +92,21 @@ public:
 	int GetSize() const { return Size; }
 
 	ListIterator<T> begin() { return ListIterator<T>(head); }
-	ListIterator<T> end()
-	{
-
-		return ListIterator<T>(nullptr);
-	}
+	ListIterator<T> end() { return ListIterator<T>(tail); }
 
 	void push_back(T data)
 	{
 		if (head == nullptr)
+		{
 			head = new Node<T>(data);
+			tail = head;
+		}
 		else
 		{
-			Node<T>* current = this->head;
-			while (current->pNext != nullptr)
-				current = current->pNext;
-			current->pNext = new Node<T>(data);
-		};
+			Node<T>* current = this->tail;
+			current->pNext = new Node<T>(data, nullptr, current);
+			tail = current->pNext;
+		}
 
 		Size++;
 	}
@@ -115,6 +118,12 @@ public:
 
 		Node<T>* temp = head;
 		head = head->pNext;
+
+		if (head != nullptr)
+			head->pPrev = nullptr;
+		else
+			tail = tail->pPrev;
+
 		delete temp;
 		Size--;
 	}
@@ -127,8 +136,15 @@ public:
 
 	void push_front(T data)
 	{
-		head = new Node<T>(data, head);
-		Size++;
+		if (head == nullptr)
+			push_back(data);
+		else
+		{
+			Node<T>* temp = head;
+			head = new Node<T>(data, head);
+			temp->pPrev = head;
+			Size++;
+		}
 	}
 
 	void insert(T data, int index)
@@ -138,13 +154,16 @@ public:
 
 		if (index == 0)
 			push_front(data);
+		else if (index == Size)
+			push_back(data);
 		else
 		{
 			Node<T>* previous = find_prev(index);
 
-			Node<T>* newNode = new Node<T>(data, previous->pNext);
+			Node<T>* newNode = new Node<T>(data, previous->pNext, previous);
+			previous->pNext->pPrev = newNode;
 			previous->pNext = newNode;
-			
+
 			Size++;
 		}
 	}
@@ -156,11 +175,14 @@ public:
 
 		if (index == 0)
 			pop_front();
+		else if (index == Size - 1)
+			pop_back();
 		else
 		{
 			Node<T>* previous = find_prev(index);
 
 			Node<T>* toDelete = previous->pNext;
+			toDelete->pNext->pPrev = previous;
 			previous->pNext = toDelete->pNext;
 
 			delete toDelete;
@@ -173,7 +195,16 @@ public:
 		if (Size == 0)
 			throw logic_error("list empty");
 
-		remove(Size - 1);
+		Node<T>* temp = tail;
+		tail = tail->pPrev;
+
+		if (tail != nullptr)
+			tail->pNext = nullptr;
+		else
+			head = head->pNext;
+
+		delete temp;
+		Size--;
 	}
 
 	friend ostream& operator << (ostream& ostr, List<T>& _l)
